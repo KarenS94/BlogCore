@@ -15,7 +15,7 @@ namespace BlogCore.Models
 		[Display(Name ="Nombre Slider")]
 		public string Nombre { get; set; }
 		[Required]
-		public string Estado{ get; set; }
+		public bool Estado{ get; set; }
 
 		[DataType(DataType.ImageUrl)]
 		[Display(Name = "Imagen")]

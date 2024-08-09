@@ -21,11 +21,11 @@ namespace BlogCore.Models
         public string Descripcion { get; set; }
 
         [Display(Name = "Fecha de Creacion")]
-        public string FechaCreacion { get; set; }
+        public string? FechaCreacion { get; set; }
 
         [DataType(DataType.ImageUrl)]
         [Display(Name = "Imagen")]
-        public string UrlImagen { get; set; }
+        public string? UrlImagen { get; set; }
 
         [Required(ErrorMessage ="La categoria es obligatoria")]
         public int CategoriaId { get; set; }

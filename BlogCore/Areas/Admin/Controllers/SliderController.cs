@@ -1,4 +1,5 @@
 ﻿using BlogCore.AccesoDatos.Data.Repository.IRepository;
+using BlogCore.Data;
 using BlogCore.Models;
 using BlogCore.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
@@ -15,7 +16,7 @@ namespace BlogCore.Areas.Admin.Controllers
         public SliderController(IContenedorTrabajo contenedorTrabajo, IWebHostEnvironment hostingEnvironment)
         {
             _contenedorTrabajo = contenedorTrabajo;
-            _hostingEnvironment = hostingEnvironment;
+			_hostingEnvironment = hostingEnvironment;
         }
 
 
@@ -26,44 +27,35 @@ namespace BlogCore.Areas.Admin.Controllers
         }
         [HttpGet]
         public IActionResult Create() 
-        {  //creamos el formulario y mandamos a llamar a dos tablas
-
-            ArticuloMV artiMV = new ArticuloMV()
-            {
-                Articulo = new BlogCore.Models.Articulo(),// pasamos una instancia al modelo articulo para poder que los campos se adapten al nombra, la descripcion, etc
-                ListaCategorias = _contenedorTrabajo.Categoria.GetListaCategorias()
-            };
-
-            return View(artiMV); 
+        {  
+            return View(); 
         }
-
-        // accion editar, lo primero que necesitamos es mostrar el formulario
      
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(ArticuloMV artiMV)
+        public IActionResult Create(Slider slider)
         {
-            if (ModelState.IsValid) 
+            if (!ModelState.IsValid) 
             { 
-                string rutaPrincipal = _hostingEnvironment.WebRootPath; // accedemos a la ruta principal q es wwwroot
-                var archivos = HttpContext.Request.Form.Files; // aqui accedemos a la carpeta. accedemos al formulario y a los archivos de ese form
-                if (artiMV.Articulo.Id == 0 && archivos.Count()> 0) // quiere decir q se esta validando si se va a crear un articulo nuevo
+                string rutaPrincipal = _hostingEnvironment.WebRootPath; 
+                var archivos = HttpContext.Request.Form.Files; 
+                if (archivos.Count() > 0) 
                 {
-                    //   nuevo articulo
-                    string nombreArchivo = Guid.NewGuid().ToString();//cada imagen tenga un nombre unico
-                    var subidas = Path.Combine(rutaPrincipal, @"imagenes\articulos");
-                    var extension = Path.GetExtension(archivos[0].FileName);// obtenemos del filename la extension del archivo
+                    //   nuevo slider
+                    string nombreArchivo = Guid.NewGuid().ToString();
+                    var subidas = Path.Combine(rutaPrincipal, @"imagenes\sliders");
+                    var extension = Path.GetExtension(archivos[0].FileName);
 
-                    using (var fileStreams = new FileStream(Path.Combine(subidas, nombreArchivo + extension), FileMode.Create)) // para crear un archivo nuevo
+                    using (var fileStreams = new FileStream(Path.Combine(subidas, nombreArchivo + extension), FileMode.Create)) 
 					{
-                        archivos[0].CopyTo(fileStreams); // para copiarlo en memoria
+                        archivos[0].CopyTo(fileStreams); 
                     }
-                    artiMV.Articulo.UrlImagen = @"\imagenes\articulos\" + nombreArchivo + extension; // aqui se guarda la ruta real que es donde se guarda el archivo
-                    artiMV.Articulo.FechaCreacion = DateTime.Now.ToString();
+                    slider.UrlImagen = @"\imagenes\sliders\" + nombreArchivo + extension; 
+            
 
                     //para guardar todo el articulo junto con la imagen y se va a crear en la base de datos
 
-                    _contenedorTrabajo.Articulo.Add(artiMV.Articulo);
+                    _contenedorTrabajo.Slider.Add(slider);
                     _contenedorTrabajo.Save();
 
                     return RedirectToAction(nameof(Index));
@@ -73,83 +65,83 @@ namespace BlogCore.Areas.Admin.Controllers
                     ModelState.AddModelError("Imagen", "Debes seleccionar una imagen");
                 }
             }
-
-
-            artiMV.ListaCategorias = _contenedorTrabajo.Categoria.GetListaCategorias();
-            return View(artiMV);
+            return View(slider);
         }
 
         [HttpGet]
         public IActionResult Edit(int? id)
         {
 
-			ArticuloMV artiMV = new ArticuloMV()
-			{
-				Articulo = new BlogCore.Models.Articulo(),
-				ListaCategorias = _contenedorTrabajo.Categoria.GetListaCategorias()
-			};
-
-            if (id != null)//si id no es igual a nulo entonces se envia el articulo
+            if (id != null)
             {
-                artiMV.Articulo = _contenedorTrabajo.Articulo.Get(id.GetValueOrDefault());// aqui obtenemos el id del articulo
+                var slider = _contenedorTrabajo.Slider.Get(id.GetValueOrDefault());
+                return View(slider);
             }
 
-            return View(artiMV);// si existe pasamos la vista
+            return View();
         }
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public IActionResult Edit(ArticuloMV artiMV)
+		public IActionResult Edit(Slider slider)
 		{
-			if (!ModelState.IsValid)
-			{
-				string rutaPrincipal = _hostingEnvironment.WebRootPath; 
-				var archivos = HttpContext.Request.Form.Files;
+            if (!ModelState.IsValid)
+            {
 
+                string rutaPrincipal = _hostingEnvironment.WebRootPath;
+                var archivos = HttpContext.Request.Form.Files;
 
-                var articuloDesdeBd = _contenedorTrabajo.Articulo.Get(artiMV.Articulo.Id);
+                var sliderDesdeBd = _contenedorTrabajo.Slider.Get(slider.Id);
 
-				if (archivos.Count() > 0) 
-				{
-					//   nueva imagen para el articulo
-					string nombreArchivo = Guid.NewGuid().ToString();
-					var subidas = Path.Combine(rutaPrincipal, @"imagenes\articulos");
-					var extension = Path.GetExtension(archivos[0].FileName);
-                    var nuevaExtension = Path.GetExtension(archivos[0].FileName);
+                if (archivos.Count() > 0)
+                {
+                    //   nuevo slider
+                    string nombreArchivo = Guid.NewGuid().ToString();
+                    var subidas = Path.Combine(rutaPrincipal, @"imagenes\sliders");
+                    var extension = Path.GetExtension(archivos[0].FileName);
 
-                    var rutaImagen = Path.Combine(rutaPrincipal, articuloDesdeBd.UrlImagen.TrimStart('\\'));
+                    //var nuevaExtension= Path.GetExtension(archivos[0].FileName);
+
+                    var rutaImagen = Path.Combine(rutaPrincipal, sliderDesdeBd.UrlImagen.TrimStart('\\'));
                     if (System.IO.File.Exists(rutaImagen))
                     {
                         System.IO.File.Delete(rutaImagen);
                     }
-                    // SUBIMOS EL ARCHIVO DE NUEVO
 
-                    using (var fileStreams = new FileStream(Path.Combine(subidas, nombreArchivo + extension), FileMode.Create)) 
-					{
-						archivos[0].CopyTo(fileStreams); 
-					}
-					artiMV.Articulo.UrlImagen = @"\imagenes\articulos\" + nombreArchivo + extension; 
-					artiMV.Articulo.FechaCreacion = DateTime.Now.ToString();
+                    using (var fileStreams = new FileStream(Path.Combine(subidas, nombreArchivo + extension), FileMode.Create))
+                    {
+                        archivos[0].CopyTo(fileStreams);
+                    }
+                    slider.UrlImagen = @"\imagenes\sliders\" + nombreArchivo + extension;
 
-					_contenedorTrabajo.Articulo.Update(artiMV.Articulo);
-					_contenedorTrabajo.Save();
 
-					return RedirectToAction(nameof(Index));
-				}
-				else
-				{
-					// mantener la imagen y cambiar los cambios
-                    artiMV.Articulo.UrlImagen = articuloDesdeBd.UrlImagen;
-				}
-				_contenedorTrabajo.Articulo.Update(artiMV.Articulo);
-				_contenedorTrabajo.Save();
+                    //para guardar todo el articulo junto con la imagen y se va a crear en la base de datos
 
-				return RedirectToAction(nameof(Index));
-			}
+                    _contenedorTrabajo.Slider.Update(slider);
+                    _contenedorTrabajo.Save();
 
-			artiMV.ListaCategorias = _contenedorTrabajo.Categoria.GetListaCategorias();
-			return View(artiMV);
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    // cuando la imagen existe y se conserva
+                    slider.UrlImagen = sliderDesdeBd.UrlImagen;
+
+                }
+
+                _contenedorTrabajo.Slider.Update(slider);
+                _contenedorTrabajo.Save();
+
+                return RedirectToAction(nameof(Index));
+
+            }
+			    
+                return View(slider);
 		}
+
+
+
+
 
 
 		#region Llamadas a la Api
@@ -157,28 +149,28 @@ namespace BlogCore.Areas.Admin.Controllers
 		// creamos un metodo para obtener o consultar datos
 		public IActionResult GetAll()
 		{
-			return Json(new { data = _contenedorTrabajo.Articulo.GetAll(includeProperties:"Categoria")});// pone nombre con la tabla relacionada a articulos
+			return Json(new { data = _contenedorTrabajo.Slider.GetAll()});
 
 		}
 
 		public IActionResult Delete(int id)
 		{
-			var articuloDesdeBd= _contenedorTrabajo.Articulo.Get(id); // accedemos al articulo
-            string rutaDirectorioPrincipal = _hostingEnvironment.WebRootPath;//para borrar la imagen de la carpeta
-            var rutaImagen = Path.Combine(rutaDirectorioPrincipal, articuloDesdeBd.UrlImagen.TrimStart('\\'));// ubicacion de la imagen para borrarla
+            var sliderDesdeBd = _contenedorTrabajo.Slider.Get(id);
+            string rutaDirectorioPrincipal = _hostingEnvironment.WebRootPath;
+            var rutaImagen = Path.Combine(rutaDirectorioPrincipal, sliderDesdeBd.UrlImagen.TrimStart('\\'));
 			if (System.IO.File.Exists(rutaImagen))
 			{
 				System.IO.File.Delete(rutaImagen);
 			}
 
-			if (articuloDesdeBd== null)
+			if (sliderDesdeBd== null)
 			{
-				return Json(new { success = false, message = "Error borrando articulo" });
+				return Json(new { success = false, message = "Error borrando slider" });
 			}
 
-			_contenedorTrabajo.Articulo.Remove(articuloDesdeBd);
+			_contenedorTrabajo.Slider.Remove(sliderDesdeBd);
 			_contenedorTrabajo.Save();
-			return Json(new { success = true, message = "Articulo borrado correctamente" });
+			return Json(new { success = true, message = "Slider borrado correctamente" });
 		}
 		#endregion
 

@@ -43,7 +43,7 @@ namespace BlogCore.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create(ArticuloMV artiMV)
         {
-            if (ModelState.IsValid) 
+            if (!ModelState.IsValid) 
             { 
                 string rutaPrincipal = _hostingEnvironment.WebRootPath; // accedemos a la ruta principal q es wwwroot
                 var archivos = HttpContext.Request.Form.Files; // aqui accedemos a la carpeta. accedemos al formulario y a los archivos de ese form

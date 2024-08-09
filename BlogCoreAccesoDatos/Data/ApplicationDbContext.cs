@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BlogCore.Data
 {
-    public class ApplicationDbContext : IdentityDbContext
+    public class ApplicationDbContext : IdentityDbContext 
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -16,6 +16,9 @@ namespace BlogCore.Data
         public DbSet<Articulo> Articulo { get; set; }
 
         public DbSet<Slider> Slider { get; set; }
-   
-    }
+        
+        public DbSet<AplicationUser> AplicationUsers { get; set; }
+
+
+	}
 }
