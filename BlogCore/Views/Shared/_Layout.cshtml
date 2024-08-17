@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@using BlogCore.Utilidades
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -34,19 +35,24 @@
                                 <span class="visually-hidden">(current)</span>
                             </a>
                         </li>
-                       
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Administrar Contenidos</a>
-                            <div class="dropdown-menu">
-                                <a class="dropdown-item" asp-area="Admin" asp-controller="Categorias" asp-action="Index">Categorías</a>
-                                <a class="dropdown-item" asp-area="Admin" asp-controller="Articulos" asp-action="Index">Artículos</a>
-                                <a class="dropdown-item" asp-area="Admin" asp-controller="Slider" asp-action="Index">Sliders</a>
-                                <a class="dropdown-item" asp-area="Admin" asp-controller="Usuarios" asp-action="Index">Usuario</a>
-                            </div>
-                        </li>
+                       <!--Autorizacion-->
+                        @if (User.IsInRole(CNT.Administrador))
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Administrar Contenidos</a>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" asp-area="Admin" asp-controller="Categorias" asp-action="Index">Categorías</a>
+                                    <a class="dropdown-item" asp-area="Admin" asp-controller="Articulos" asp-action="Index">Artículos</a>
+                                    <a class="dropdown-item" asp-area="Admin" asp-controller="Slider" asp-action="Index">Sliders</a>
+                                    <a class="dropdown-item" asp-area="Admin" asp-controller="Usuarios" asp-action="Index">Usuario</a>
+                                </div>
+                            </li>
+
+                        }
+
                     </ul>
-                    <form class="d-flex">
-                        <input class="form-control me-sm-2" type="search" placeholder="Ingrese lo que quiere buscar">
+                    <form class="d-flex" asp-controller="Home" asp-action="ResultadoBusqueda" method="get">
+                        <input class="form-control me-sm-2 d-flex text-dark" type="text" name="searchString" placeholder="Buscar...">
                         <button class="btn btn-secondary my-2 my-sm-0" type="submit">Buscar</button>
                     </form>
                 </div>

@@ -20,6 +20,7 @@ namespace BlogCore.AccesoDatos.Data.Repository
            Categoria = new CategoriaRepository(_db); // aqui ya queda encapsulado
            Articulo = new ArticuloRepository(_db);
            Slider = new SliderRepository(_db);
+           Usuario = new UsuarioRepository(_db);
         }
 
         public ICategoriaRepository Categoria {  get; private set; } // para usar esta categoria mandamos a llamar al constructor
@@ -27,7 +28,9 @@ namespace BlogCore.AccesoDatos.Data.Repository
 
 		public ISliderRepository Slider { get; private set; }
 
-		public void Dispose()
+        public IUsuarioRepository Usuario { get; private set; }
+
+        public void Dispose()
         {
            _db.Dispose(); // libera los recursos una vez que se abra una conexion a la bd y la oper q haga el guardado etc.
         }

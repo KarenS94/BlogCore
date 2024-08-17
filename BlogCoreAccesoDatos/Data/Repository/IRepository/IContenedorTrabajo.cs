@@ -13,6 +13,8 @@ namespace BlogCore.AccesoDatos.Data.Repository.IRepository
         IArticuloRepository Articulo { get; }
 		ISliderRepository Slider { get; }
 
+        IUsuarioRepository Usuario { get; }
+
 
 
 		// hacemos el metodo save para guardar los cambios realizados en la unidad de trabajo

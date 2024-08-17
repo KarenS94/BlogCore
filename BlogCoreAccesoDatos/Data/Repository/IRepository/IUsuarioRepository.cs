@@ -7,11 +7,9 @@ using System.Threading.Tasks;
 
 namespace BlogCore.AccesoDatos.Data.Repository.IRepository
 {
-    public interface IArticuloRepository : IRepository<Articulo> 
+    public  interface IUsuarioRepository : IRepository<AplicationUser>
     {
-        void Update(Articulo articulo);
-        // Metodo para el buscador
-
-        IQueryable<Articulo> AsQueryable();
+        void BloquearUsuario(string IdUsuario);
+        void DesbloquearUsuario(string IdUsuario);
     }
 }
